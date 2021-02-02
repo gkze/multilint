@@ -397,7 +397,7 @@ python-versions = "*"
 name = "pydocstyle"
 version = "5.1.1"
 description = "Python docstring style checker"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -489,7 +489,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "snowballstemmer"
 version = "2.1.0"
 description = "This package provides 29 stemmers for 28 languages generated from Snowball algorithms."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -679,7 +679,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4be643f9397edfaa8f329b919ce32c5614543bb6d0e7020b56c69ae6c61ebb4f"
+content-hash = "6d82bbb5303e3838f05163f4491c0acf05d31d19b9d4b0292e4ad00352d03322"
 
 [metadata.files]
 alabaster = [
