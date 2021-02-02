@@ -60,8 +60,8 @@ is possible **today**.
   best practices linter
 
 Support for more tools may be added by subclassing the
-[`ToolRunner`](multilint.py#L130) class and overriding the
-[`.run(...)`](multilint.py#L162) method.
+[`ToolRunner`](multilint.py#L127) class and overriding the
+[`.run(...)`](multilint.py#L159) method.
 
 There are some utilities provided, such as:
 
@@ -69,8 +69,8 @@ There are some utilities provided, such as:
   from within and a configuration
 * A mapping for tool configuration that is automatically available in the
   `ToolRunner` class (as long as it is registered in the
-  [`Tool`](multilint.py#L47)) enum, the [`TOOL_RUNNERS`](multilint.py#L440)
-  mapping, and declared in the [`DEFAULT_TOOL_ORDER`](multilint.py#L459) class
+  [`Tool`](multilint.py#L47)) enum, the [`TOOL_RUNNERS`](multilint.py#L437)
+  mapping, and declared in the [`DEFAULT_TOOL_ORDER`](multilint.py#L456) class
   variable of `Multilint`.
 
 Documentation about adding support for more tools to Multilint may be added in
