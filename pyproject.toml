@@ -35,8 +35,6 @@ pdoc = "^4.0.0"
 
 [tool.poetry.scripts]
 multilint = "multilint:main"
-gendocs = "tasks:gendocs"
-srvdocs = "tasks:srvdocs"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
