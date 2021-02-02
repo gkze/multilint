@@ -1,5 +1,10 @@
 # Multilint (for Python)
 
+[![Actions Test Workflow Widget]][Actions Test Workflow Status]
+
+[Actions Test Workflow Status]: https://github.com/gkze/multilint/actions?query=workflow%3Aci
+[Actions Test Workflow Widget]: https://github.com/gkze/multilint/workflows/ci/badge.svg
+
 A utility tying together multiple linting and other code quality tools
 
 Multilint allows running several code quality tools under the same interface.
