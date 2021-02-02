@@ -41,14 +41,11 @@ LogLevel = TypeVar("LogLevel", bound=int)
 
 LOG_FMT: str = "%(asctime)s [%(levelname)s] [%(name)s] %(msg)s"
 logging.basicConfig(level=logging.INFO, format=LOG_FMT)
-LOGGER: logging.Logger = logging.getLogger("multilint")
+LOGGER: Logger = logging.getLogger("multilint")
 
 
 class Tool(Enum):
-    """The Tool enum.
-
-    Encapsulates all supported linters, including Multilint itself.
-    """
+    """Encapsulates all supported linters, including Multilint itself."""
 
     AUTOFLAKE: str = "autoflake"
     BLACK: str = "black"
@@ -68,14 +65,14 @@ class ToolResult(Enum):
 
 
 class ToolLogger(Logger):
-    """ToolLogger allows setting the format on itself during instantiation."""
+    """ToolLogger allows setting format on itself during instantiation."""
 
     def __init__(
         self: ToolLogger, name: str, level: LogLevel, logfmt: str = LOG_FMT
     ) -> None:
         """Create a ToolLogger with the specified name, level, and format.
 
-        Format gets applied immediately.
+        Log format gets applied immediately.
         """
         super().__init__(name, level=level)
 
@@ -99,7 +96,7 @@ class TextIOLogger(TextIOBase, ToolLogger):
     A logger that masquerades as a TextIO-compatible object, allowing it to be
     passed into code quality tools that write to TextIO interfaces. This way,
     it is possible to wrap the stdout / stderr / other streams with our
-    commong logging.
+    common logging.
     """
 
     def __init__(
