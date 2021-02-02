@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymultilint"
 packages = [{include = "multilint.py"}]
-version = "0.1.7"
+version = "0.1.8"
 description = "Utility tying multiple code quality tools together"
 authors = ["George Kontridze <george.kontridze@gmail.com>"]
 license = "MIT"
@@ -19,6 +19,7 @@ isort = "5.7.0"
 pylint = "2.6.0"
 toml = "0.10.2"
 black = "^20.8b1"
+mypy = "^0.800"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.19.0"
