@@ -30,7 +30,7 @@ from black import main as black_main
 from isort import files as isort_files  # type: ignore
 from isort.api import sort_file as isort_file  # type: ignore
 from isort.settings import DEFAULT_CONFIG  # type: ignore
-from mypy.main import main as mypy_main # pylint: disable=no-name-in-module
+from mypy.main import main as mypy_main  # pylint: disable=no-name-in-module
 from pylint.lint import Run as PylintRun  # type: ignore
 
 FILE_DIR: Path = Path(__file__).resolve().parent
@@ -497,10 +497,13 @@ class Multilint:
         a ToolResult from the run.
         """
         LOGGER.info(f"Running {tool.value}...")
+        tool_config: Mapping[str, Any] = self._get_tool_config(tool)
 
         result: ToolResult = cast(
             ToolRunner,
-            TOOL_RUNNERS[tool](tool, self._src_paths, self._get_tool_config(tool)),
+            TOOL_RUNNERS[tool](
+                tool, tool_config.get("src_paths", self._src_paths), tool_config
+            ),
         ).run()
 
         LOGGER.info(f"{tool.value} exited with {result}")
