@@ -30,7 +30,7 @@ from black import main as black_main
 from isort import files as isort_files  # type: ignore
 from isort.api import sort_file as isort_file  # type: ignore
 from isort.settings import DEFAULT_CONFIG  # type: ignore
-from mypy.main import main as mypy_main
+from mypy.main import main as mypy_main # pylint: disable=no-name-in-module
 from pylint.lint import Run as PylintRun  # type: ignore
 
 FILE_DIR: Path = Path(__file__).resolve().parent
