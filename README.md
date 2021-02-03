@@ -22,6 +22,22 @@ installed as `pymultilint`:
 $ pip3 install multilint
 ```
 
+## Usage
+
+Multilint exposes a CLI entry point:
+
+```bash
+$ multilint [paths ...]
+```
+
+It can optionally take a set of starting paths. There are no CLI options,
+as Multilint strives to have all of its configuration codified (see
+[Configurability](#configurability)).
+
+Alternatively, Multilint is also usable via its API - either the
+[`main`](multilint.py#L526) method, or the
+[`Multilint`](multilint.py#L447) class
+
 ## Supported Tools
 
 Currently, Multilint integrates the following code quality tools:
