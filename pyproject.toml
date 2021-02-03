@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymultilint"
 packages = [{include = "multilint.py"}]
-version = "0.1.12"
+version = "0.1.13"
 description = "Utility tying multiple code quality tools together"
 authors = ["George Kontridze <george.kontridze@gmail.com>"]
 license = "MIT"
@@ -46,6 +46,9 @@ ignore_init_module_imports = true
 remove_all_unused_imports = true
 remove_unused_variables = true
 verbose = true
+
+[tool.mypy]
+src_paths = ["*.py"]
 
 [tool.pylint.messages_control]
 disable = ["logging-fstring-interpolation", "dangerous-default-value"]

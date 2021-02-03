@@ -197,7 +197,7 @@ class AutoflakeRunner(ToolRunner):
         autoflake_args: List[str] = self._make_autoflake_args()
 
         if all([cfgval.startswith("--") for cfgval in autoflake_args]):
-            autoflake_args.extend([str(p) for p in self._src_paths])
+            autoflake_args.extend([p.name for p in self._src_paths])
 
         retcode: int = autoflake_main(
             [self._tool.value, *autoflake_args], logger, logger
@@ -302,10 +302,7 @@ class BlackRunner(ToolRunner):
             black.err = logger.warn  # type: ignore
 
             # pylint: disable=no-value-for-parameter
-            black_main(
-                [str(p) for p in self._src_paths]
-                or self._config.get("src_paths", ["."])
-            )
+            black_main([p.name for p in self._src_paths])
 
             return ToolResult.SUCCESS
 
@@ -337,8 +334,7 @@ class MypyRunner(ToolRunner):
                 None,
                 logger_as_textio,
                 logger_as_textio,
-                [str(p) for p in self._src_paths]
-                or self._config.get("src_paths", ["."]),
+                [p.name for p in self._src_paths],
             )
 
             return ToolResult.SUCCESS
@@ -354,7 +350,7 @@ class PylintRunner(ToolRunner):
         """Run pylint."""
         with patch("sys.stdout", self.make_logger(TextIOLogger, logging.INFO)):
             try:
-                PylintRun([str(p) for p in self._src_paths] or ["."])
+                PylintRun([p.name for p in self._src_paths])
 
                 return ToolResult.SUCCESS
 
@@ -473,16 +469,16 @@ class Multilint:
 
     def __init__(
         self: Multilint,
-        src_paths: Seq[Path] = [],
+        src_paths: Seq[str] = [],
         pyproject_toml_path: Path = Path(".") / PYPROJECT_TOML_FILENAME,
     ) -> None:
         """Construct a new Multilint instance."""
         self._config: Mapping[str, Any] = parse_pyproject_toml(pyproject_toml_path)
         self._multilint_config = self._get_tool_config(Tool.MULTILINT)
-        self._src_paths: Seq[Path] = expand_src_paths(
+        self._src_paths: Seq[str] = (
             src_paths
             if len(src_paths) > 0
-            else [Path(sp) for sp in self._multilint_config.get("src_paths", ["."])]
+            else self._multilint_config.get("src_paths", ["."])
         )
 
         self._tool_order: Seq[Tool] = [
@@ -506,7 +502,11 @@ class Multilint:
         result: ToolResult = cast(
             ToolRunner,
             TOOL_RUNNERS[tool](
-                tool, tool_config.get("src_paths", self._src_paths), tool_config
+                tool,
+                expand_src_paths(
+                    [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
+                ),
+                tool_config,
             ),
         ).run()
 
@@ -536,9 +536,7 @@ def main(argv: Seq[str] = [], do_exit: bool = True) -> Optional[int]:
     The main / default entry point to multilint. Runs all tools and logs
     their results.
     """
-    results: Mapping[Tool, ToolResult] = Multilint(
-        [Path(p) for p in argv]
-    ).run_all_tools()
+    results: Mapping[Tool, ToolResult] = Multilint(argv).run_all_tools()
 
     LOGGER.info("Results:")
     for tool, result in results.items():
