@@ -197,7 +197,7 @@ class AutoflakeRunner(ToolRunner):
         autoflake_args: List[str] = self._make_autoflake_args()
 
         if all([cfgval.startswith("--") for cfgval in autoflake_args]):
-            autoflake_args.extend([p.name for p in self._src_paths])
+            autoflake_args.extend([str(p) for p in self._src_paths])
 
         retcode: int = autoflake_main(
             [self._tool.value, *autoflake_args], logger, logger
@@ -240,7 +240,10 @@ class ISortRunner(ToolRunner):
         )
 
         for file in isort_files.find(
-            self._src_paths or DEFAULT_CONFIG.src_paths, DEFAULT_CONFIG, [], []
+            [str(p) for p in self._src_paths] or DEFAULT_CONFIG.src_paths,
+            DEFAULT_CONFIG,
+            [],
+            [],
         ):
             try:
                 with patch("sys.stdout", isort_logger):
@@ -302,7 +305,7 @@ class BlackRunner(ToolRunner):
             black.err = logger.warn  # type: ignore
 
             # pylint: disable=no-value-for-parameter
-            black_main([p.name for p in self._src_paths])
+            black_main([str(p) for p in self._src_paths])
 
             return ToolResult.SUCCESS
 
@@ -334,7 +337,7 @@ class MypyRunner(ToolRunner):
                 None,
                 logger_as_textio,
                 logger_as_textio,
-                [p.name for p in self._src_paths],
+                [str(p) for p in self._src_paths],
             )
 
             return ToolResult.SUCCESS
@@ -350,7 +353,7 @@ class PylintRunner(ToolRunner):
         """Run pylint."""
         with patch("sys.stdout", self.make_logger(TextIOLogger, logging.INFO)):
             try:
-                PylintRun([p.name for p in self._src_paths])
+                PylintRun([str(p) for p in self._src_paths])
 
                 return ToolResult.SUCCESS
 
