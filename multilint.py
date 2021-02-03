@@ -302,7 +302,10 @@ class BlackRunner(ToolRunner):
             black.err = logger.warn  # type: ignore
 
             # pylint: disable=no-value-for-parameter
-            black_main([str(p) for p in self._src_paths] or ["."])
+            black_main(
+                [str(p) for p in self._src_paths]
+                or self._config.get("src_paths", ["."])
+            )
 
             return ToolResult.SUCCESS
 
@@ -431,7 +434,13 @@ def parse_pyproject_toml(pyproject_toml_path: Path = Path(".")) -> Mapping[str, 
 
 def expand_src_paths(src_paths: Seq[Path]) -> List[Path]:
     """Expand source paths in case they are globs."""
-    return sum([[Path(ge) for ge in glob(p.name)] for p in src_paths], [])
+    return sum(
+        [
+            [Path(ge) for ge in glob(p.name)] if "*" in p.name else [p]
+            for p in src_paths
+        ],
+        [],
+    )
 
 
 TOOL_RUNNERS: Mapping[Tool, Type[ToolRunner]] = {
@@ -472,10 +481,8 @@ class Multilint:
         self._multilint_config = self._get_tool_config(Tool.MULTILINT)
         self._src_paths: Seq[Path] = expand_src_paths(
             src_paths
-            if src_paths != []
-            else [
-                Path(sp) for sp in self._multilint_config.get("src_paths", [Path(".")])
-            ],
+            if len(src_paths) > 0
+            else [Path(sp) for sp in self._multilint_config.get("src_paths", ["."])]
         )
 
         self._tool_order: Seq[Tool] = [
