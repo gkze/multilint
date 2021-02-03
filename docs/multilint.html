@@ -552,7 +552,10 @@ from a centralized location.</p>
             <span class="n">black</span><span class="o">.</span><span class="n">err</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">warn</span>  <span class="c1"># type: ignore</span>
 
             <span class="c1"># pylint: disable=no-value-for-parameter</span>
-            <span class="n">black_main</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
+            <span class="n">black_main</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">]</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">ToolResult</span><span class="o">.</span><span class="n">SUCCESS</span>
 
@@ -681,7 +684,13 @@ from a centralized location.</p>
 
 <span class="k">def</span> <span class="nf">expand_src_paths</span><span class="p">(</span><span class="n">src_paths</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Expand source paths in case they are globs.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">sum</span><span class="p">([[</span><span class="n">Path</span><span class="p">(</span><span class="n">ge</span><span class="p">)</span> <span class="k">for</span> <span class="n">ge</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">src_paths</span><span class="p">],</span> <span class="p">[])</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">ge</span><span class="p">)</span> <span class="k">for</span> <span class="n">ge</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">src_paths</span>
+        <span class="p">],</span>
+        <span class="p">[],</span>
+    <span class="p">)</span>
 
 
 <span class="n">TOOL_RUNNERS</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Tool</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">ToolRunner</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
@@ -722,10 +731,8 @@ from a centralized location.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">Tool</span><span class="o">.</span><span class="n">MULTILINT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_src_paths</span><span class="p">(</span>
             <span class="n">src_paths</span>
-            <span class="k">if</span> <span class="n">src_paths</span> <span class="o">!=</span> <span class="p">[]</span>
-            <span class="k">else</span> <span class="p">[</span>
-                <span class="n">Path</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)])</span>
-            <span class="p">],</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tool_order</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -796,7 +803,7 @@ from a centralized location.</p>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
 </pre></div>
 
             </details>
@@ -1847,7 +1854,10 @@ rule set (with sensible defaults).</p>
             <span class="n">black</span><span class="o">.</span><span class="n">err</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">warn</span>  <span class="c1"># type: ignore</span>
 
             <span class="c1"># pylint: disable=no-value-for-parameter</span>
-            <span class="n">black_main</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
+            <span class="n">black_main</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">]</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">ToolResult</span><span class="o">.</span><span class="n">SUCCESS</span>
 
@@ -1895,7 +1905,10 @@ rule set (with sensible defaults).</p>
             <span class="n">black</span><span class="o">.</span><span class="n">err</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">warn</span>  <span class="c1"># type: ignore</span>
 
             <span class="c1"># pylint: disable=no-value-for-parameter</span>
-            <span class="n">black_main</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
+            <span class="n">black_main</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">]</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">ToolResult</span><span class="o">.</span><span class="n">SUCCESS</span>
 
@@ -2293,7 +2306,13 @@ Mapping.</p>
                 <summary class="button">View Source</summary>
                 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">expand_src_paths</span><span class="p">(</span><span class="n">src_paths</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Expand source paths in case they are globs.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">sum</span><span class="p">([[</span><span class="n">Path</span><span class="p">(</span><span class="n">ge</span><span class="p">)</span> <span class="k">for</span> <span class="n">ge</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">src_paths</span><span class="p">],</span> <span class="p">[])</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">ge</span><span class="p">)</span> <span class="k">for</span> <span class="n">ge</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">src_paths</span>
+        <span class="p">],</span>
+        <span class="p">[],</span>
+    <span class="p">)</span>
 </pre></div>
 
             </details>
@@ -2348,10 +2367,8 @@ Mapping.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">Tool</span><span class="o">.</span><span class="n">MULTILINT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_src_paths</span><span class="p">(</span>
             <span class="n">src_paths</span>
-            <span class="k">if</span> <span class="n">src_paths</span> <span class="o">!=</span> <span class="p">[]</span>
-            <span class="k">else</span> <span class="p">[</span>
-                <span class="n">Path</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)])</span>
-            <span class="p">],</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tool_order</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -2430,10 +2447,8 @@ other tool plugins is easy.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">Tool</span><span class="o">.</span><span class="n">MULTILINT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_paths</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_src_paths</span><span class="p">(</span>
             <span class="n">src_paths</span>
-            <span class="k">if</span> <span class="n">src_paths</span> <span class="o">!=</span> <span class="p">[]</span>
-            <span class="k">else</span> <span class="p">[</span>
-                <span class="n">Path</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)])</span>
-            <span class="p">],</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilint_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">])]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tool_order</span><span class="p">:</span> <span class="n">Seq</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
