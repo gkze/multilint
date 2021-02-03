@@ -309,8 +309,8 @@ class BlackRunner(ToolRunner):
 
             return ToolResult.SUCCESS
 
-        except SystemExit as exit:
-            return ToolResult.SUCCESS if exit.code == 0 else ToolResult.FAILURE
+        except SystemExit as sysexit:
+            return ToolResult.SUCCESS if sysexit.code == 0 else ToolResult.FAILURE
 
         finally:
             click.secho = click_secho_orig
@@ -342,8 +342,8 @@ class MypyRunner(ToolRunner):
 
             return ToolResult.SUCCESS
 
-        except SystemExit as exit:
-            return ToolResult.SUCCESS if exit.code == 0 else ToolResult.FAILURE
+        except SystemExit as sysexit:
+            return ToolResult.SUCCESS if sysexit.code == 0 else ToolResult.FAILURE
 
 
 class PylintRunner(ToolRunner):
@@ -357,8 +357,8 @@ class PylintRunner(ToolRunner):
 
                 return ToolResult.SUCCESS
 
-            except SystemExit as exit:
-                return ToolResult.SUCCESS if exit.code == 0 else ToolResult.FAILURE
+            except SystemExit as sysexit:
+                return ToolResult.SUCCESS if sysexit.code == 0 else ToolResult.FAILURE
 
 
 class PydocstyleRunner(ToolRunner):
