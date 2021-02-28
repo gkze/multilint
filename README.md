@@ -112,8 +112,8 @@ There are some utilities provided, such as:
 * A dictionary for tool configuration that is automatically available in the
   `ToolRunner` class, as long as the tool is registered in
   * The [`Tool`](multilint.py#L47) enum,
-  * The [`TOOL_RUNNERS`](multilint.py#L437) mapping, and declared
-  * The [`DEFAULT_TOOL_ORDER`](multilint.py#L456) class variable of `Multilint`.
+  * The [`TOOL_RUNNERS`](multilint.py#L446) mapping, and declared
+  * The [`DEFAULT_TOOL_ORDER`](multilint.py#L465) class variable of `Multilint`.
 
 Documentation about adding support for more tools to Multilint may be added in
 the future.

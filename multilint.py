@@ -196,6 +196,7 @@ class AutoflakeRunner(ToolRunner):
         logger: Logger = self.make_logger(TextIOLogger, logging.INFO)
         autoflake_args: List[str] = self._make_autoflake_args()
 
+        # pylint: disable=use-a-generator
         if all([cfgval.startswith("--") for cfgval in autoflake_args]):
             autoflake_args.extend([str(p) for p in self._src_paths])
 
@@ -532,7 +533,6 @@ class Multilint:
         return results
 
 
-# pylint: disable=unsubscriptable-object
 def main(argv: Seq[str] = [], do_exit: bool = True) -> Optional[int]:
     """Acts as the default entry point for Multilint.
 
@@ -545,6 +545,7 @@ def main(argv: Seq[str] = [], do_exit: bool = True) -> Optional[int]:
     for tool, result in results.items():
         LOGGER.info(f"{tool}: {result}")
 
+    # pylint: disable=use-a-generator
     retcode: int = 0 if all([r == ToolResult.SUCCESS for r in results.values()]) else 1
 
     if do_exit:
