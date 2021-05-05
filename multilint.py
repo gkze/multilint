@@ -442,7 +442,7 @@ class PyupgradeRunner(ToolRunner):
                         keep_mock=self.config.get("keep_mock", None),
                         keep_percent_format=self.config.get("keep_percent_format", None),
                         keep_runtime_typing=self.config.get("keep_runtime_typing", None),
-                        min_version=tuple(int(v) for v in cast(str, self.config.get("min_version", "")).split(".")),
+                        min_version=tuple(int(v) for v in cast(str, self.config.get("min_version", "2.7")).split(".")),
                         # pylint enable=line-too-long
                     ),
                     # fmt: on
