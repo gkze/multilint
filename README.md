@@ -53,6 +53,8 @@ Currently, Multilint integrates the following code quality tools:
 * [Pylint](https://www.pylint.org) - general best practices linter
 * [Pydocstyle](http://www.pydocstyle.org/en/stable/) - in-source documentation
   best practices linter
+* [Pyupgrade](https://github.com/asottile/pyupgrade) - upgrades Python syntax to
+  the latest for the specified version
 
 ## Configurability
 
