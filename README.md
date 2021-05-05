@@ -78,7 +78,15 @@ srcs_paths = ["somepackage"]
 src_paths = ["someotherpackage"]
 
 [tool.multilint]
-tool_order = ["autoflake", "isort", "black", "mypy", "pylint", "pycodestyle"]
+tool_order = [
+  "autoflake",
+  "isort",
+  "pyupgrade",
+  "black",
+  "mypy",
+  "pylint",
+  "pydocstyle"
+]
 src_paths = ["."]
 ```
 

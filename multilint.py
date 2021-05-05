@@ -9,16 +9,18 @@ from a centralized location.
 from __future__ import annotations
 
 import logging
+import re
 import sys
+from argparse import Namespace
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from glob import glob
 from io import TextIOBase
 from logging import Formatter, Logger, StreamHandler
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Iterable, Mapping
 from typing import Sequence as Seq
-from typing import Set, TextIO, Type, TypeVar, Union, cast
+from typing import TextIO, TypeVar, cast
 from unittest.mock import patch
 
 import black
@@ -32,6 +34,7 @@ from isort.api import sort_file as isort_file  # type: ignore
 from isort.settings import DEFAULT_CONFIG  # type: ignore
 from mypy.main import main as mypy_main  # pylint: disable=no-name-in-module
 from pylint.lint import Run as PylintRun  # type: ignore
+from pyupgrade._main import _fix_file as pyupgrade_fix_file  # type: ignore
 
 FILE_DIR: Path = Path(__file__).resolve().parent
 ROOT_DIR: Path = FILE_DIR
@@ -50,10 +53,11 @@ class Tool(Enum):
     AUTOFLAKE: str = "autoflake"
     BLACK: str = "black"
     ISORT: str = "isort"
-    MYPY: str = "mypy"
     MULTILINT: str = "multilint"
-    PYLINT: str = "pylint"
+    MYPY: str = "mypy"
     PYDOCSTYLE: str = "pydocstyle"
+    PYLINT: str = "pylint"
+    PYUPGRADE: str = "pyupgrade"
 
 
 class ToolResult(Enum):
@@ -140,14 +144,14 @@ class ToolRunner:
     ) -> None:
         """Initialize a ToolRunner object."""
         self._tool: Tool = tool
-        self._src_paths: Seq[Path] = src_paths
-        self._config: Mapping[str, Any] = config
+        self.src_paths: Seq[Path] = src_paths
+        self.config: Mapping[str, Any] = config
 
     def make_logger(
         self: ToolRunner,
-        cls: Union[Type[ToolLogger], Type[TextIOLogger]],
+        cls: type[ToolLogger] | type[TextIOLogger],
         level: LogLevel,
-    ) -> Union[ToolLogger, TextIOLogger]:
+    ) -> ToolLogger | TextIOLogger:
         """Create a logger for the ToolRunner object.
 
         Creates a logger object from the specified logger class (can be
@@ -170,10 +174,10 @@ class AutoflakeRunner(ToolRunner):
     accepted.
     """
 
-    def _make_autoflake_args(self: AutoflakeRunner) -> List[str]:
-        args: List[str] = []
+    def _make_autoflake_args(self: AutoflakeRunner) -> list[str]:
+        args: list[str] = []
 
-        for key, val in self._config.items():
+        for key, val in self.config.items():
             if key == "src_paths":
                 for src in val:
                     args.append(src)
@@ -194,11 +198,11 @@ class AutoflakeRunner(ToolRunner):
     def run(self: AutoflakeRunner) -> ToolResult:
         """Run autoflake."""
         logger: Logger = self.make_logger(TextIOLogger, logging.INFO)
-        autoflake_args: List[str] = self._make_autoflake_args()
+        autoflake_args: list[str] = self._make_autoflake_args()
 
         # pylint: disable=use-a-generator
         if all([cfgval.startswith("--") for cfgval in autoflake_args]):
-            autoflake_args.extend([str(p) for p in self._src_paths])
+            autoflake_args.extend([str(p) for p in self.src_paths])
 
         retcode: int = autoflake_main(
             [self._tool.value, *autoflake_args], logger, logger
@@ -234,14 +238,15 @@ class ISortRunner(ToolRunner):
     def run(self: ISortRunner) -> ToolResult:
         """Run isort."""
         logger: Logger = self.make_logger(ToolLogger, logging.INFO)
-        results: Set[ISortResult] = set()
+        results: set[ISortResult] = set()
 
         isort_logger: TextIOLogger = cast(
             TextIOLogger, self.make_logger(TextIOLogger, logging.INFO)
         )
 
         for file in isort_files.find(
-            [str(p) for p in self._src_paths] or DEFAULT_CONFIG.src_paths,
+            [str(p) for p in self.src_paths]
+            or cast(Iterable[str], DEFAULT_CONFIG.src_paths),
             DEFAULT_CONFIG,
             [],
             [],
@@ -262,7 +267,7 @@ class ISortRunner(ToolRunner):
                     )
                 )
 
-        failed: Set[ISortResult] = set()
+        failed: set[ISortResult] = set()
         for isort_result in results:
             if isort_result.result == ToolResult.FAILURE:
                 failed.add(isort_result)
@@ -293,7 +298,7 @@ class BlackRunner(ToolRunner):
         logger: Logger = self.make_logger(ToolLogger, logging.DEBUG)
 
         # pylint: disable=unsubscriptable-object
-        def secho_shim(message: Optional[str], **_: Mapping[Any, Any]):
+        def secho_shim(message: str | None, **_: Mapping[Any, Any]):
             logger.info(message)
 
         click_secho_orig = click.secho
@@ -306,7 +311,7 @@ class BlackRunner(ToolRunner):
             black.err = logger.warn  # type: ignore
 
             # pylint: disable=no-value-for-parameter
-            black_main([str(p) for p in self._src_paths])
+            black_main([str(p) for p in self.src_paths])
 
             return ToolResult.SUCCESS
 
@@ -338,7 +343,7 @@ class MypyRunner(ToolRunner):
                 None,
                 logger_as_textio,
                 logger_as_textio,
-                [str(p) for p in self._src_paths],
+                [str(p) for p in self.src_paths],
             )
 
             return ToolResult.SUCCESS
@@ -354,7 +359,7 @@ class PylintRunner(ToolRunner):
         """Run pylint."""
         with patch("sys.stdout", self.make_logger(TextIOLogger, logging.INFO)):
             try:
-                PylintRun([str(p) for p in self._src_paths])
+                PylintRun([str(p) for p in self.src_paths])
 
                 return ToolResult.SUCCESS
 
@@ -380,7 +385,7 @@ class PydocstyleRunner(ToolRunner):
             """
 
             # pylint: disable=unsubscriptable-object
-            def setLevel(self: InfoToolLogger, _: Union[int, str]) -> None:
+            def setLevel(self: InfoToolLogger, _: int | str) -> None:
                 self.level = logging.INFO
 
         info_logger: InfoToolLogger = InfoToolLogger(self._tool.value, logging.INFO)
@@ -403,6 +408,47 @@ class PydocstyleRunner(ToolRunner):
         finally:
             pydocstyle.utils.log = pydocstyle_log_orig
             pydocstyle.checker.log = pydocstyle_log_orig
+
+
+class PyupgradeRunner(ToolRunner):
+    """Runs Pyupgrade.
+
+    Pyupgrade automatically upgrades Python syntax to the latest for the
+    specified Python version.
+    """
+
+    def _validate_config(self: PyupgradeRunner) -> None:
+        # fmt: off
+        if (
+            "min_version" in self.config
+            and not re.match( r"^[0-9].[0-9]", self.config["min_version"])
+        ):
+            raise ValueError("min_version must be a valid Python version!")
+        # fmt: on
+
+    def run(self: PyupgradeRunner) -> ToolResult:
+        """Run Pyupgrade."""
+        self._validate_config()
+
+        with patch("sys.stdout", self.make_logger(TextIOLogger, logging.INFO)):
+            retcode: int = 0
+            for src_path in self.src_paths:
+                retcode |= pyupgrade_fix_file(
+                    src_path,
+                    # fmt: off
+                    Namespace(
+                        # pylint: disable=line-too-long
+                        exit_zero_even_if_changed=self.config.get("exit_zero_even_if_changed", None),
+                        keep_mock=self.config.get("keep_mock", None),
+                        keep_percent_format=self.config.get("keep_percent_format", None),
+                        keep_runtime_typing=self.config.get("keep_runtime_typing", None),
+                        min_version=tuple(int(v) for v in cast(str, self.config.get("min_version", "")).split(".")),
+                        # pylint enable=line-too-long
+                    ),
+                    # fmt: on
+                )
+
+            return ToolResult.SUCCESS if retcode == 0 else ToolResult.FAILURE
 
 
 def find_pyproject_toml(path: Path = Path(".")) -> Path:
@@ -432,7 +478,7 @@ def parse_pyproject_toml(pyproject_toml_path: Path = Path(".")) -> Mapping[str, 
         return toml.load(file)
 
 
-def expand_src_paths(src_paths: Seq[Path]) -> List[Path]:
+def expand_src_paths(src_paths: Seq[Path]) -> list[Path]:
     """Expand source paths in case they are globs."""
     return sum(
         [
@@ -443,9 +489,10 @@ def expand_src_paths(src_paths: Seq[Path]) -> List[Path]:
     )
 
 
-TOOL_RUNNERS: Mapping[Tool, Type[ToolRunner]] = {
+TOOL_RUNNERS: Mapping[Tool, type[ToolRunner]] = {
     Tool.AUTOFLAKE: AutoflakeRunner,
     Tool.ISORT: ISortRunner,
+    Tool.PYUPGRADE: PyupgradeRunner,
     Tool.BLACK: BlackRunner,
     Tool.MYPY: MypyRunner,
     Tool.PYLINT: PylintRunner,
@@ -465,6 +512,7 @@ class Multilint:
     DEFAULT_TOOL_ORDER: Seq[Tool] = [
         Tool.AUTOFLAKE,
         Tool.ISORT,
+        Tool.PYUPGRADE,
         Tool.BLACK,
         Tool.MYPY,
         Tool.PYLINT,
@@ -522,7 +570,7 @@ class Multilint:
         self: Multilint, order: Seq[Tool] = None
     ) -> Mapping[Tool, ToolResult]:
         """Run tools in specified order."""
-        results: Dict[Tool, ToolResult] = {}
+        results: dict[Tool, ToolResult] = {}
 
         if order is None:
             order = self._tool_order
@@ -533,7 +581,7 @@ class Multilint:
         return results
 
 
-def main(argv: Seq[str] = [], do_exit: bool = True) -> Optional[int]:
+def main(argv: Seq[str] = [], do_exit: bool = True) -> int | None:
     """Acts as the default entry point for Multilint.
 
     The main / default entry point to multilint. Runs all tools and logs
