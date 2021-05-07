@@ -430,7 +430,7 @@ class PyupgradeRunner(ToolRunner):
         """Run Pyupgrade."""
         self._validate_config()
 
-        logger: TextIOLogger = self.make_logger(TextIOLogger, logging.INFO)
+        logger: ToolLogger = self.make_logger(TextIOLogger, logging.INFO)
 
         with patch("sys.stdout", logger), patch("sys.stderr", logger):
             retcode: int = 0
