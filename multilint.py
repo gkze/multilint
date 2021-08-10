@@ -23,16 +23,14 @@ from typing import Sequence as Seq
 from typing import TextIO, TypeVar, cast
 from unittest.mock import patch
 
-import black
-import click
 import pydocstyle  # type: ignore
 import toml
 from autoflake import _main as autoflake_main  # type: ignore
 from black import main as black_main
-from isort import files as isort_files  # type: ignore
-from isort.api import sort_file as isort_file  # type: ignore
-from isort.settings import DEFAULT_CONFIG  # type: ignore
-from mypy.main import main as mypy_main  # pylint: disable=no-name-in-module
+from isort import files as isort_files
+from isort.api import sort_file as isort_file
+from isort.settings import DEFAULT_CONFIG
+from mypy.main import main as mypy_main
 from pylint.lint import Run as PylintRun  # type: ignore
 from pyupgrade._main import _fix_file as pyupgrade_fix_file  # type: ignore
 
@@ -93,7 +91,6 @@ class ToolLogger(Logger):
         self.addHandler(handler)
 
 
-# pylint: disable=too-many-ancestors
 class TextIOLogger(TextIOBase, ToolLogger):
     """Logger object that can be written to like a stream-like object.
 
@@ -199,9 +196,7 @@ class AutoflakeRunner(ToolRunner):
         """Run autoflake."""
         logger: Logger = self.make_logger(TextIOLogger, logging.INFO)
         autoflake_args: list[str] = self._make_autoflake_args()
-
-        # pylint: disable=use-a-generator
-        if all([cfgval.startswith("--") for cfgval in autoflake_args]):
+        if all(cfgval.startswith("--") for cfgval in autoflake_args):
             autoflake_args.extend([str(p) for p in self.src_paths])
 
         retcode: int = autoflake_main(
@@ -256,7 +251,6 @@ class ISortRunner(ToolRunner):
                     isort_file(file)
 
                 results.add(ISortResult(Path(file), ToolResult.SUCCESS))
-
             # pylint: disable=broad-except
             except Exception as ex:
                 results.add(
@@ -295,21 +289,13 @@ class BlackRunner(ToolRunner):
 
     def run(self: BlackRunner) -> ToolResult:
         """Run black."""
-        logger: Logger = self.make_logger(ToolLogger, logging.DEBUG)
-
-        # pylint: disable=unsubscriptable-object
-        def secho_shim(message: str | None, **_: Mapping[Any, Any]):
-            logger.info(message)
-
-        click_secho_orig = click.secho
-        black_out_orig = black.out
-        black_err_orig = black.err
+        iologger: Logger = self.make_logger(TextIOLogger, logging.INFO)
+        sys_stdout_orig = sys.stdout
+        sys_stderr_orig = sys.stderr
 
         try:
-            click.secho = secho_shim  # type: ignore
-            black.out = logger.info  # type: ignore
-            black.err = logger.warn  # type: ignore
-
+            sys.stdout = cast(TextIO, iologger)
+            sys.stderr = cast(TextIO, iologger)
             # pylint: disable=no-value-for-parameter
             black_main([str(p) for p in self.src_paths])
 
@@ -319,9 +305,8 @@ class BlackRunner(ToolRunner):
             return ToolResult.SUCCESS if sysexit.code == 0 else ToolResult.FAILURE
 
         finally:
-            click.secho = click_secho_orig
-            black.out = black_out_orig
-            black.err = black_err_orig
+            sys.stdout = sys_stdout_orig  # type: ignore
+            sys.stderr = sys_stderr_orig
 
 
 class MypyRunner(ToolRunner):
@@ -384,7 +369,6 @@ class PydocstyleRunner(ToolRunner):
             passed.
             """
 
-            # pylint: disable=unsubscriptable-object
             def setLevel(self: InfoToolLogger, _: int | str) -> None:
                 self.level = logging.INFO
 
@@ -393,8 +377,6 @@ class PydocstyleRunner(ToolRunner):
         try:
             pydocstyle.utils.log = info_logger
             pydocstyle.checker.log = info_logger
-
-            # Have to import here so the patching above works
             # pylint: disable=import-outside-toplevel
             from pydocstyle.cli import run_pydocstyle as pydocstyle_main  # type: ignore
 
@@ -418,13 +400,10 @@ class PyupgradeRunner(ToolRunner):
     """
 
     def _validate_config(self: PyupgradeRunner) -> None:
-        # fmt: off
-        if (
-            "min_version" in self.config
-            and not re.match( r"^[0-9].[0-9]", self.config["min_version"])
+        if "min_version" in self.config and not re.match(
+            r"^[0-9].[0-9]", self.config["min_version"]
         ):
             raise ValueError("min_version must be a valid Python version!")
-        # fmt: on
 
     def run(self: PyupgradeRunner) -> ToolResult:
         """Run Pyupgrade."""
@@ -437,17 +416,24 @@ class PyupgradeRunner(ToolRunner):
             for src_path in self.src_paths:
                 retcode |= pyupgrade_fix_file(
                     src_path,
-                    # fmt: off
                     Namespace(
-                        # pylint: disable=line-too-long
-                        exit_zero_even_if_changed=self.config.get("exit_zero_even_if_changed", None),
+                        exit_zero_even_if_changed=self.config.get(
+                            "exit_zero_even_if_changed", None
+                        ),
                         keep_mock=self.config.get("keep_mock", None),
-                        keep_percent_format=self.config.get("keep_percent_format", None),
-                        keep_runtime_typing=self.config.get("keep_runtime_typing", None),
-                        min_version=tuple(int(v) for v in cast(str, self.config.get("min_version", "2.7")).split(".")),
-                        # pylint enable=line-too-long
+                        keep_percent_format=self.config.get(
+                            "keep_percent_format", None
+                        ),
+                        keep_runtime_typing=self.config.get(
+                            "keep_runtime_typing", None
+                        ),
+                        min_version=tuple(
+                            int(v)
+                            for v in cast(
+                                str, self.config.get("min_version", "2.7")
+                            ).split(".")
+                        ),
                     ),
-                    # fmt: on
                 )
 
             return ToolResult.SUCCESS if retcode == 0 else ToolResult.FAILURE
@@ -483,10 +469,10 @@ def parse_pyproject_toml(pyproject_toml_path: Path = Path(".")) -> Mapping[str, 
 def expand_src_paths(src_paths: Seq[Path]) -> list[Path]:
     """Expand source paths in case they are globs."""
     return sum(
-        [
+        (
             [Path(ge) for ge in glob(p.name)] if "*" in p.name else [p]
             for p in src_paths
-        ],
+        ),
         [],
     )
 
@@ -594,9 +580,7 @@ def main(argv: Seq[str] = [], do_exit: bool = True) -> int | None:
     LOGGER.info("Results:")
     for tool, result in results.items():
         LOGGER.info(f"{tool}: {result}")
-
-    # pylint: disable=use-a-generator
-    retcode: int = 0 if all([r == ToolResult.SUCCESS for r in results.values()]) else 1
+    retcode: int = 0 if all(r == ToolResult.SUCCESS for r in results.values()) else 1
 
     if do_exit:
         sys.exit(retcode)
