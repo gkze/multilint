@@ -479,12 +479,12 @@ def expand_src_paths(src_paths: Seq[Path]) -> list[Path]:
 
 TOOL_RUNNERS: Mapping[Tool, type[ToolRunner]] = {
     Tool.AUTOFLAKE: AutoflakeRunner,
-    Tool.ISORT: ISortRunner,
-    Tool.PYUPGRADE: PyupgradeRunner,
     Tool.BLACK: BlackRunner,
+    Tool.ISORT: ISortRunner,
     Tool.MYPY: MypyRunner,
-    Tool.PYLINT: PylintRunner,
     Tool.PYDOCSTYLE: PydocstyleRunner,
+    Tool.PYLINT: PylintRunner,
+    Tool.PYUPGRADE: PyupgradeRunner,
 }
 
 
@@ -498,9 +498,9 @@ class Multilint:
     """
 
     DEFAULT_TOOL_ORDER: Seq[Tool] = [
+        Tool.PYUPGRADE,
         Tool.AUTOFLAKE,
         Tool.ISORT,
-        Tool.PYUPGRADE,
         Tool.BLACK,
         Tool.MYPY,
         Tool.PYLINT,
