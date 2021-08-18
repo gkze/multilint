@@ -30,7 +30,7 @@ from black import main as black_main
 from isort import files as isort_files
 from isort.api import sort_file as isort_file
 from isort.settings import DEFAULT_CONFIG
-from mypy.main import main as mypy_main # pylint: disable=no-name-in-module
+from mypy.main import main as mypy_main  # pylint: disable=no-name-in-module
 from pylint.lint import Run as PylintRun  # type: ignore
 from pyupgrade._main import _fix_file as pyupgrade_fix_file  # type: ignore
 
