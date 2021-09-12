@@ -443,6 +443,7 @@ def find_pyproject_toml(path: Path = Path(".")) -> Path | None:
     Finds the first pyproject.toml by searching in the current directory,
     traversing upward to the filesystem root if not found.
     """
+    print(path)
     if path == Path("/"):
         return None
 
@@ -451,7 +452,7 @@ def find_pyproject_toml(path: Path = Path(".")) -> Path | None:
     if filepath.exists() and filepath.is_file():
         return path / PYPROJECT_TOML_FILENAME
 
-    return find_pyproject_toml(path.parent)
+    return find_pyproject_toml(path.resolve().parent)
 
 
 def parse_pyproject_toml(pyproject_toml_path: Path = Path(".")) -> Mapping[str, Any]:
