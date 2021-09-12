@@ -230,6 +230,7 @@ class ISortRunner(ToolRunner):
     rule set (with sensible defaults).
     """
 
+    # pylint: disable=too-many-branches
     def run(self: ISortRunner) -> ToolResult:
         """Run isort."""
         logger: Logger = self.make_logger(ToolLogger, logging.INFO)
@@ -239,12 +240,11 @@ class ISortRunner(ToolRunner):
             TextIOLogger, self.make_logger(TextIOLogger, logging.INFO)
         )
 
+        # fmt: off
         for file in isort_files.find(
             [str(p) for p in self.src_paths]
             or cast(Iterable[str], DEFAULT_CONFIG.src_paths),
-            DEFAULT_CONFIG,
-            [],
-            [],
+            DEFAULT_CONFIG, [], [],
         ):
             try:
                 with patch("sys.stdout", isort_logger):
@@ -253,13 +253,11 @@ class ISortRunner(ToolRunner):
                 results.add(ISortResult(Path(file), ToolResult.SUCCESS))
             # pylint: disable=broad-except
             except Exception as ex:
-                results.add(
-                    ISortResult(
-                        Path(file),
-                        ToolResult.FAILURE,
-                        getattr(ex, "message") if hasattr(ex, "message") else "",
-                    )
-                )
+                results.add(ISortResult(
+                    Path(file), ToolResult.FAILURE,
+                    getattr(ex, "message") if hasattr(ex, "message") else "",
+                ))
+        # fmt: on
 
         failed: set[ISortResult] = set()
         for isort_result in results:
@@ -439,19 +437,19 @@ class PyupgradeRunner(ToolRunner):
             return ToolResult.SUCCESS if retcode == 0 else ToolResult.FAILURE
 
 
-def find_pyproject_toml(path: Path = Path(".")) -> Path:
+def find_pyproject_toml(path: Path = Path(".")) -> Path | None:
     """Discover closest pyproject.toml.
 
     Finds the first pyproject.toml by searching in the current directory,
     traversing upward to the filesystem root if not found.
     """
+    if path == Path("/"):
+        return None
+
     filepath: Path = path / PYPROJECT_TOML_FILENAME
 
     if filepath.exists() and filepath.is_file():
         return path / PYPROJECT_TOML_FILENAME
-
-    if path == Path("/"):
-        raise RuntimeError("No pyproject.toml found!")
 
     return find_pyproject_toml(path.parent)
 
@@ -462,7 +460,11 @@ def parse_pyproject_toml(pyproject_toml_path: Path = Path(".")) -> Mapping[str, 
     Reads in the pyproject.toml file and returns a parsed version of it as a
     Mapping.
     """
-    with find_pyproject_toml(pyproject_toml_path).open("r") as file:
+    pyproject_toml: Path | None = find_pyproject_toml(pyproject_toml_path)
+    if pyproject_toml is None:
+        return {}
+
+    with pyproject_toml.open("r") as file:
         return toml.load(file)
 
 
@@ -509,13 +511,15 @@ class Multilint:
 
     def __init__(
         self: Multilint,
-        src_paths: Seq[str] = [],
+        src_paths: Seq[Path] = [Path(".")],
         pyproject_toml_path: Path = Path(".") / PYPROJECT_TOML_FILENAME,
     ) -> None:
         """Construct a new Multilint instance."""
-        self._config: Mapping[str, Any] = parse_pyproject_toml(pyproject_toml_path)
+        self._config: Mapping[str, Any] = {}
+        self._config = parse_pyproject_toml(pyproject_toml_path)
+
         self._multilint_config = self._get_tool_config(Tool.MULTILINT)
-        self._src_paths: Seq[str] = (
+        self._src_paths: Seq[Path] = (
             src_paths
             if len(src_paths) > 0
             else self._multilint_config.get("src_paths", ["."])
@@ -569,13 +573,13 @@ class Multilint:
         return results
 
 
-def main(argv: Seq[str] = [], do_exit: bool = True) -> int | None:
+def main(src_paths: Seq[Path] = [Path(".")], do_exit: bool = True) -> int | None:
     """Acts as the default entry point for Multilint.
 
     The main / default entry point to multilint. Runs all tools and logs
     their results.
     """
-    results: Mapping[Tool, ToolResult] = Multilint(argv).run_all_tools()
+    results: Mapping[Tool, ToolResult] = Multilint(src_paths).run_all_tools()
 
     LOGGER.info("Results:")
     for tool, result in results.items():
@@ -589,4 +593,4 @@ def main(argv: Seq[str] = [], do_exit: bool = True) -> int | None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:] if len(sys.argv) > 1 else ["."])
+    sys.exit(main(list(map(Path, sys.argv[1:]))))
