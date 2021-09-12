@@ -443,7 +443,6 @@ def find_pyproject_toml(path: Path = Path(".")) -> Path | None:
     Finds the first pyproject.toml by searching in the current directory,
     traversing upward to the filesystem root if not found.
     """
-    print(path)
     if path == Path("/"):
         return None
 
@@ -544,16 +543,15 @@ class Multilint:
         LOGGER.info(f"Running {tool.value}...")
         tool_config: Mapping[str, Any] = self._get_tool_config(tool)
 
-        result: ToolResult = cast(
-            ToolRunner,
-            TOOL_RUNNERS[tool](
-                tool,
-                expand_src_paths(
-                    [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
-                ),
-                tool_config,
+        # fmt: off
+        result: ToolResult = cast(ToolRunner, TOOL_RUNNERS[tool](
+            tool,
+            expand_src_paths(
+                [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
             ),
-        ).run()
+            tool_config,
+        )).run()
+        # fmt: on
 
         LOGGER.info(f"{tool.value} exited with {result}")
 
@@ -574,7 +572,9 @@ class Multilint:
         return results
 
 
-def main(src_paths: Seq[Path] = [Path(".")], do_exit: bool = True) -> int | None:
+def main(
+    src_paths: Seq[Path] = list(map(Path, sys.argv[1:])), do_exit: bool = True
+) -> int | None:
     """Acts as the default entry point for Multilint.
 
     The main / default entry point to multilint. Runs all tools and logs
@@ -585,6 +585,7 @@ def main(src_paths: Seq[Path] = [Path(".")], do_exit: bool = True) -> int | None
     LOGGER.info("Results:")
     for tool, result in results.items():
         LOGGER.info(f"{tool}: {result}")
+
     retcode: int = 0 if all(r == ToolResult.SUCCESS for r in results.values()) else 1
 
     if do_exit:
