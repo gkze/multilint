@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymultilint"
 packages = [{include = "multilint.py"}]
-version = "0.9.0"
+version = "0.10.0"
 description = "Utility tying multiple code quality tools together"
 authors = ["George Kontridze <george.kontridze@gmail.com>"]
 license = "MIT"
@@ -12,22 +12,22 @@ documentation = "https://gkze.github.io/multilint/multilint.html"
 keywords = ["lint", "code-quality", "tools"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pydocstyle = "^6.0.0"
+python = "^3.10"
+pydocstyle = "^6.1.1"
 autoflake = "^1.4"
-isort = "^5.8.0"
-pylint = "^2.8.2"
+isort = "^5.10.1"
+pylint = "^2.12.2"
 toml = "^0.10.2"
-black = "^21.5b0"
-mypy = "^0.812"
-pyupgrade = "^2.14.0"
+black = "^22.1.0"
+mypy = "^0.931"
+pyupgrade = "^2.31.0"
 
 [tool.poetry.dev-dependencies]
-ipython = "^7.19.0"
-jedi = "0.17.2"
-parso = "0.7.1"
-sphinx-rtd-theme = "^0.5.1"
-pdoc = "^4.0.0"
+ipython = "^8.0.1"
+jedi = "^0.18.1"
+parso = "^0.8.3"
+sphinx-rtd-theme = "^1.0.0"
+pdoc3 = "^0.10.0"
 
 [tool.poetry.scripts]
 multilint = "multilint:main"
@@ -48,7 +48,7 @@ remove_unused_variables = true
 verbose = true
 
 [tool.mypy]
-src_paths = ["*.py"]
+files = ["*.py"]
 
 [tool.pyupgrade]
 src_paths = ["*.py", "**/*.py"]
