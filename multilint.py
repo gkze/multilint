@@ -48,22 +48,22 @@ LOGGER: Logger = logging.getLogger("multilint")
 class Tool(Enum):
     """Encapsulates all supported linters, including Multilint itself."""
 
-    AUTOFLAKE: str = "autoflake"
-    BLACK: str = "black"
-    ISORT: str = "isort"
-    MULTILINT: str = "multilint"
-    MYPY: str = "mypy"
-    PYDOCSTYLE: str = "pydocstyle"
-    PYLINT: str = "pylint"
-    PYUPGRADE: str = "pyupgrade"
+    AUTOFLAKE = "autoflake"
+    BLACK = "black"
+    ISORT = "isort"
+    MULTILINT = "multilint"
+    MYPY = "mypy"
+    PYDOCSTYLE = "pydocstyle"
+    PYLINT = "pylint"
+    PYUPGRADE = "pyupgrade"
 
 
 class ToolResult(Enum):
     """ToolResult describes a generic run result from a code quality tool."""
 
-    SUCCESS: int = auto()
-    SUCCESS_PARTIAL: int = auto()
-    FAILURE: int = auto()
+    SUCCESS = auto()
+    SUCCESS_PARTIAL = auto()
+    FAILURE = auto()
 
 
 class ToolLogger(Logger):
