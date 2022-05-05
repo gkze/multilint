@@ -303,7 +303,7 @@ class BlackRunner(ToolRunner):
             return ToolResult.SUCCESS if sysexit.code == 0 else ToolResult.FAILURE
 
         finally:
-            sys.stdout = sys_stdout_orig  # type: ignore
+            sys.stdout = sys_stdout_orig
             sys.stderr = sys_stderr_orig
 
 
@@ -322,12 +322,7 @@ class MypyRunner(ToolRunner):
         logger_as_textio: TextIO = cast(TextIO, logger)
 
         try:
-            mypy_main(
-                None,
-                logger_as_textio,
-                logger_as_textio,
-                [str(p) for p in self.src_paths],
-            )
+            mypy_main(None, logger_as_textio, logger_as_textio)
 
             return ToolResult.SUCCESS
 
