@@ -28,6 +28,7 @@ jedi = "^0.18.1"
 parso = "^0.8.3"
 sphinx-rtd-theme = "^1.0.0"
 pdoc3 = "^0.10.0"
+types-toml = "^0.10.6"
 
 [tool.poetry.scripts]
 multilint = "multilint:main"
