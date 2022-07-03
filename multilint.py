@@ -590,4 +590,4 @@ def main(
 
 
 if __name__ == "__main__":
-    sys.exit(main(list(map(Path, sys.argv[1:]))))
+    sys.exit(main([Path(arg) for arg in sys.argv[1:]]))

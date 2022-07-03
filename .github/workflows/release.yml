@@ -1,40 +1,27 @@
 ---
-name: CI
+name: Release
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - master
 
 jobs:
-  lint:
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        python-version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-
-    runs-on: ${{ matrix.os }}
-
+  release:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+      
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-cache
 
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
-
+          python-version: "3.10.4"
+      
       - name: Upgrade pip
         run: pip3 install -U pip
 
@@ -44,5 +31,15 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Run multilint on itself
-        run: poetry run multilint
+      - name: Build artifacts
+        run: poetry build
+
+      - name: Create GitHub Release
+        run: gh release creaate "$(poetry verion -s)" dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION }}
+      
+      - name: Upload artifacts to PyPI
+        run: poetry publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secret.PYPITOKEN }}

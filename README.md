@@ -35,8 +35,8 @@ as Multilint strives to have all of its configuration codified (see
 [Configurability](#configurability)).
 
 Alternatively, Multilint is also usable via its API - either the
-[`main`](multilint.py#L526) method, or the
-[`Multilint`](multilint.py#L447) class
+[`main`](multilint.py#L570) method, or the
+[`Multilint`](multilint.py#L488) class.
 
 ## Supported Tools
 
@@ -112,8 +112,8 @@ it is desired to target a specific tool at a different set of files
 ## Extending Multilint
 
 Support for more tools may be added by subclassing the
-[`ToolRunner`](multilint.py#L127) class and overriding the
-[`.run(...)`](multilint.py#L159) method.
+[`ToolRunner`](multilint.py#L128) class and overriding the
+[`.run(...)`](multilint.py#L160) method.
 
 There are some utilities provided, such as:
 
@@ -121,9 +121,9 @@ There are some utilities provided, such as:
   from within and wrapping it with preferred logging
 * A dictionary for tool configuration that is automatically available in the
   `ToolRunner` class, as long as the tool is registered in
-  * The [`Tool`](multilint.py#L47) enum,
-  * The [`TOOL_RUNNERS`](multilint.py#L446) mapping, and declared
-  * The [`DEFAULT_TOOL_ORDER`](multilint.py#L465) class variable of `Multilint`.
+  * The [`Tool`](multilint.py#L48) enum,
+  * The [`TOOL_RUNNERS`](multilint.py#L477) mapping, and declared
+  * The [`DEFAULT_TOOL_ORDER`](multilint.py#L497) class variable of `Multilint`.
 
 Documentation about adding support for more tools to Multilint may be added in
 the future.

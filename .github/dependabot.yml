@@ -1,0 +1,8 @@
+---
+version: 2
+
+updates:
+  - package-ecossytem: pip
+    directory: "/"
+    schedule:
+      interval: monthly
