@@ -36,6 +36,10 @@ jobs:
 
       - name: Create GitHub Release
         run: gh release creaate "$(poetry verion -s)" dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION }}
       
       - name: Upload artifacts to PyPI
         run: poetry publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secret.PYPITOKEN }}
