@@ -38,7 +38,7 @@ jobs:
         run: poetry build
 
       - name: Create GitHub Release
-        run: gh release create "$(poetry verion -s)" dist/*
+        run: gh release create $(poetry verion -s) dist/*
         env:
           GH_TOKEN: ${{ secrets.ACTIONS }}
       
