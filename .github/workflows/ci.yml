@@ -28,6 +28,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-cache
 
       - name: Setup Python
         uses: actions/setup-python@v2
