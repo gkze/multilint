@@ -21,7 +21,7 @@ Functions
     traversing upward to the filesystem root if not found.
 
     
-`main(src_paths: Seq[Path] = [PosixPath('multilint.py'), PosixPath('-o'), PosixPath('docs'), PosixPath('--force')], do_exit: bool = True) ‑> int | None`
+`main(src_paths: Seq[Path] = [PosixPath('-fo'), PosixPath('docs'), PosixPath('multilint.py')], do_exit: bool = True) ‑> int | None`
 :   Acts as the default entry point for Multilint.
     
     The main / default entry point to multilint. Runs all tools and logs
