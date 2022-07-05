@@ -406,7 +406,7 @@ class PyupgradeRunner(ToolRunner):
 
         with patch("sys.stdout", logger), patch("sys.stderr", logger):
             retcode: int = 0
-            for src_path in self.src_paths:
+            for src_path in [p for p in self.src_paths if p.is_file()]:
                 retcode |= pyupgrade_fix_file(
                     src_path,
                     Namespace(
@@ -568,7 +568,7 @@ class Multilint:
 
 
 def main(
-    src_paths: Seq[Path] = list(map(Path, sys.argv[1:])), do_exit: bool = True
+    src_paths: Seq[Path] = [Path(p) for p in sys.argv[1:]], do_exit: bool = True
 ) -> int | None:
     """Acts as the default entry point for Multilint.
 
