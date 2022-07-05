@@ -568,7 +568,7 @@ class Multilint:
 
 
 def main(
-    src_paths: Seq[Path] = [Path(p) for p in sys.argv[1:]], do_exit: bool = True
+    src_paths: Seq[Path] = [Path(p) for p in sys.argv[1:]], do_exit: bool = True  # type: ignore
 ) -> int | None:
     """Acts as the default entry point for Multilint.
 
