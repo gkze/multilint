@@ -12,15 +12,15 @@ import logging
 import re
 import sys
 from argparse import Namespace
+from collections.abc import Iterable, Mapping
+from collections.abc import Sequence as Seq
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from glob import glob
 from io import TextIOBase
 from logging import Formatter, Logger, StreamHandler
 from pathlib import Path
-from typing import Any, Iterable, Mapping
-from typing import Sequence as Seq
-from typing import TextIO, TypeVar, cast
+from typing import Any, TextIO, TypeVar, cast
 from unittest.mock import patch
 
 import pydocstyle  # type: ignore
