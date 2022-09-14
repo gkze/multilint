@@ -1,6 +1,6 @@
 # Multilint (for Python)
 
-[![Actions Test Workflow Widget](https://github.com/gkze/multilint/workflows/ci/badge.svg)](https://github.com/gkze/multilint/actions?query=workflow%3Aci)
+[![Actions Test Workflow Widget](https://github.com/gkze/multilint/workflows/CI/badge.svg)](https://github.com/gkze/multilint/actions?query=workflow%3ACI)
 [![PyPI Version](https://img.shields.io/pypi/v/pymultilint)](https://pypi.org/project/pymultilint/)
 [![Pdoc Documentation](https://img.shields.io/badge/pdoc-docs-green)](https://gkze.github.io/multilint/multilint.html)
 
