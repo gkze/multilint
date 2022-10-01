@@ -19,7 +19,7 @@ isort = "^5.10.1"
 pylint = "^2.14.4"
 toml = "^0.10.2"
 black = "^22.6.0"
-mypy = ">=0.961,<0.972"
+mypy = ">=0.961,<0.982"
 pyupgrade = "^2.34.0"
 
 [tool.poetry.dev-dependencies]
