@@ -386,7 +386,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "pdoc"
-version = "12.1.0"
+version = "12.2.0"
 description = "API Documentation for Python Projects"
 category = "dev"
 optional = false
@@ -830,7 +830,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "20060327e0169e7209111b88e44a16cdc14215ee3a5bf1265590fc6ab580210c"
+content-hash = "7b368667dae501fe24fb0a19f2f60ca4d44b41ca6aa66f9117da6b97907f0c8b"
 
 [metadata.files]
 alabaster = [
@@ -1081,8 +1081,8 @@ pathspec = [
     {file = "pathspec-0.10.1.tar.gz", hash = "sha256:7ace6161b621d31e7902eb6b5ae148d12cfd23f4a249b9ffb6b9fee12084323d"},
 ]
 pdoc = [
-    {file = "pdoc-12.1.0-py3-none-any.whl", hash = "sha256:fe1d3cd7bbc19f45451d223c7f4649dcf4f2abdbcc92580d9602cc12d677e560"},
-    {file = "pdoc-12.1.0.tar.gz", hash = "sha256:b36ea7b3bfe1b9d2e14d0ce52b971d845ad5e114ba641e11999099ef9d822df2"},
+    {file = "pdoc-12.2.0-py3-none-any.whl", hash = "sha256:043ab59983ea166ba15c9950eca3683194e5fbc7bbcdd61595f95d18fdc5c05c"},
+    {file = "pdoc-12.2.0.tar.gz", hash = "sha256:1a4f2ca3f02772941b7b7fe85cb50b9b0c86ed4c2417bcf7d0bd7ad189ae1ba8"},
 ]
 pexpect = [
     {file = "pexpect-4.8.0-py2.py3-none-any.whl", hash = "sha256:0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"},
