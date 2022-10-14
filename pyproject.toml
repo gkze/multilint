@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymultilint"
 packages = [{include = "multilint.py"}]
-version = "0.18.0"
+version = "0.19.0"
 description = "Utility tying multiple code quality tools together"
 authors = ["George Kontridze <george.kontridze@gmail.com>"]
 license = "MIT"
@@ -42,7 +42,6 @@ src_paths = ["*.py", "docs"]
 
 [tool.autoflake]
 recursive = true
-in_place = true
 ignore_init_module_imports = true
 remove_all_unused_imports = true
 remove_unused_variables = true
