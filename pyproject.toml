@@ -20,7 +20,7 @@ pylint = "^2.14.4"
 toml = "^0.10.2"
 black = "^22.6.0"
 mypy = ">=0.961,<0.972"
-pyupgrade = "^2.34.0"
+pyupgrade = ">=2.34,<4.0"
 
 [tool.poetry.dev-dependencies]
 ipython = "^8.5.0"
