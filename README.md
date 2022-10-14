@@ -16,10 +16,10 @@ checker invocations every time in a project.
 
 Since there is an existing project called
 [`multilint`](https://pypi.org/project/multilint/), this Multilint can be
-installed as `pymultilint`:
+installed as `pymultilint` (since there is already [a conflicting project of the same name on PyPI](https://pypi.org/project/multilint/)):
 
 ```bash
-$ pip3 install multilint
+$ pip3 install pymultilint
 ```
 
 ## Usage
@@ -122,8 +122,8 @@ There are some utilities provided, such as:
 * A dictionary for tool configuration that is automatically available in the
   `ToolRunner` class, as long as the tool is registered in
   * The [`Tool`](multilint.py#L48) enum,
-  * The [`TOOL_RUNNERS`](multilint.py#L477) mapping, and declared
-  * The [`DEFAULT_TOOL_ORDER`](multilint.py#L497) class variable of `Multilint`.
+  * The [`TOOL_RUNNERS`](multilint.py#L480) mapping, and declared
+  * The [`DEFAULT_TOOL_ORDER`](multilint.py#L500) class variable of `Multilint`.
 
 Documentation about adding support for more tools to Multilint may be added in
 the future.
