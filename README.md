@@ -16,7 +16,7 @@ checker invocations every time in a project.
 
 Since there is an existing project called
 [`multilint`](https://pypi.org/project/multilint/), this Multilint can be
-installed as `pymultilint` (since there is already [a conflicting project of the same name on PyPI](https://pypi.org/project/multilint/)):
+installed as `pymultilint`:
 
 ```bash
 $ pip3 install pymultilint
