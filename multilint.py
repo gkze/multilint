@@ -199,6 +199,9 @@ class AutoflakeRunner(ToolRunner):
         if all(cfgval.startswith("--") for cfgval in autoflake_args):
             autoflake_args.extend([str(p) for p in self.src_paths])
 
+        if "--in-place" not in autoflake_args:
+            autoflake_args.append("--in-place")
+
         retcode: int = autoflake_main(
             [self._tool.value, *autoflake_args], logger, logger
         )
