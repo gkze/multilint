@@ -23,7 +23,7 @@ mypy = ">=0.961,<0.972"
 pyupgrade = "^2.34.0"
 
 [tool.poetry.dev-dependencies]
-ipython = "^8.5.0"
+ipython = "^8.7.0"
 jedi = "^0.18.1"
 parso = "^0.8.3"
 sphinx-rtd-theme = "^1.0.0"
