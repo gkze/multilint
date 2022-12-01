@@ -58,14 +58,14 @@ wheel = ">=0.23.0,<1.0"
 
 [[package]]
 name = "autoflake"
-version = "1.7.5"
+version = "2.0.0"
 description = "Removes unused imports and unused variables"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-pyflakes = ">=1.1.0"
+pyflakes = ">=3.0.0"
 tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
 
 [[package]]
@@ -481,7 +481,7 @@ toml = ["toml"]
 
 [[package]]
 name = "pyflakes"
-version = "2.5.0"
+version = "3.0.1"
 description = "passive checker of Python programs"
 category = "main"
 optional = false
@@ -833,7 +833,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "20060327e0169e7209111b88e44a16cdc14215ee3a5bf1265590fc6ab580210c"
+content-hash = "e39d3fab5dd0861a15a39218d169757dd9bffaa44a33ba9e8391b12c1b23c4a7"
 
 [metadata.files]
 alabaster = [
@@ -857,8 +857,8 @@ astunparse = [
     {file = "astunparse-1.6.3.tar.gz", hash = "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872"},
 ]
 autoflake = [
-    {file = "autoflake-1.7.5-py2.py3-none-any.whl", hash = "sha256:bedb29201b07876cd9cad3a804760b1127b9bf156cf9689762a12eabd1683b65"},
-    {file = "autoflake-1.7.5.tar.gz", hash = "sha256:9848061faca11745e6ca9feb010a8caa9d62ec3ea1817413c226eb3b58bbdada"},
+    {file = "autoflake-2.0.0-py3-none-any.whl", hash = "sha256:d58ed4187c6b4f623a942b9a90c43ff84bf6a266f3682f407b42ca52073c9678"},
+    {file = "autoflake-2.0.0.tar.gz", hash = "sha256:7185b596e70d8970c6d4106c112ef41921e472bd26abf3613db99eca88cc8c2a"},
 ]
 babel = [
     {file = "Babel-2.10.3-py3-none-any.whl", hash = "sha256:ff56f4892c1c4bf0d814575ea23471c230d544203c7748e8c68f0089478d48eb"},
@@ -1114,8 +1114,8 @@ pydocstyle = [
     {file = "pydocstyle-6.1.1.tar.gz", hash = "sha256:1d41b7c459ba0ee6c345f2eb9ae827cab14a7533a88c5c6f7e94923f72df92dc"},
 ]
 pyflakes = [
-    {file = "pyflakes-2.5.0-py2.py3-none-any.whl", hash = "sha256:4579f67d887f804e67edb544428f264b7b24f435b263c4614f384135cea553d2"},
-    {file = "pyflakes-2.5.0.tar.gz", hash = "sha256:491feb020dca48ccc562a8c0cbe8df07ee13078df59813b83959cbdada312ea3"},
+    {file = "pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
+    {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
 ]
 pygments = [
     {file = "Pygments-2.13.0-py3-none-any.whl", hash = "sha256:f643f331ab57ba3c9d89212ee4a2dabc6e94f117cf4eefde99a0574720d14c42"},
