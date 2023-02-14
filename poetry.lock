@@ -80,19 +80,18 @@ wheel = ">=0.23.0,<1.0"
 
 [[package]]
 name = "autoflake"
-version = "1.7.5"
+version = "2.0.1"
 description = "Removes unused imports and unused variables"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "autoflake-1.7.5-py2.py3-none-any.whl", hash = "sha256:bedb29201b07876cd9cad3a804760b1127b9bf156cf9689762a12eabd1683b65"},
-    {file = "autoflake-1.7.5-py3-none-any.whl", hash = "sha256:5ce7977d4f9905b01ef12d572f69252406009718ec1bac95fb5d74eb4faca58b"},
-    {file = "autoflake-1.7.5.tar.gz", hash = "sha256:9848061faca11745e6ca9feb010a8caa9d62ec3ea1817413c226eb3b58bbdada"},
+    {file = "autoflake-2.0.1-py3-none-any.whl", hash = "sha256:143b0843667734af53532c443e950c787316b9b1155b2273558260b44836e8e4"},
+    {file = "autoflake-2.0.1.tar.gz", hash = "sha256:1ce520131b7f396915242fe91e57221f4d42408529bbe3ae93adafed286591e0"},
 ]
 
 [package.dependencies]
-pyflakes = ">=1.1.0"
+pyflakes = ">=3.0.0"
 tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
 
 [[package]]
@@ -761,14 +760,14 @@ toml = ["toml"]
 
 [[package]]
 name = "pyflakes"
-version = "2.5.0"
+version = "3.0.1"
 description = "passive checker of Python programs"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "pyflakes-2.5.0-py2.py3-none-any.whl", hash = "sha256:4579f67d887f804e67edb544428f264b7b24f435b263c4614f384135cea553d2"},
-    {file = "pyflakes-2.5.0.tar.gz", hash = "sha256:491feb020dca48ccc562a8c0cbe8df07ee13078df59813b83959cbdada312ea3"},
+    {file = "pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
+    {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
 ]
 
 [[package]]
@@ -1295,4 +1294,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "b7dab3b18c5d2dec355c4c61e0dc78be1ad975835cc07fc82bd04fa9050c4cb4"
+content-hash = "ab960c07bc6c8ec7019e0374797e38a933f8625983090f05fb3898104c06329b"
