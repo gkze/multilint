@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymultilint"
 packages = [{include = "multilint.py"}]
-version = "0.22.0"
+version = "0.23.0"
 description = "Utility tying multiple code quality tools together"
 authors = ["George Kontridze <george.kontridze@gmail.com>"]
 license = "MIT"
@@ -12,23 +12,23 @@ documentation = "https://gkze.github.io/multilint/multilint.html"
 keywords = ["lint", "code-quality", "tools"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pydocstyle = "^6.1.1"
-autoflake = "^1.4"
-isort = "^5.10.1"
-pylint = "^2.14.4"
+python = "^3.10"
+pydocstyle = "^6.3.0"
+autoflake = "^2.0.2"
+isort = "^5.12.0"
+pylint = "^2.17.2"
 toml = "^0.10.2"
-black = "^22.6.0"
-mypy = ">=0.961,<0.972"
-pyupgrade = ">=2.34,<4.0"
+black = "^23.3.0"
+mypy = "^1.2.0"
+pyupgrade = "^3.3.1"
 
 [tool.poetry.dev-dependencies]
-ipython = "^8.5.0"
-jedi = "^0.18.1"
-parso = "^0.8.3"
-sphinx-rtd-theme = "^1.0.0"
-pdoc = "^12.3.1"
-types-toml = "^0.10.8"
+ipython = "^8.12"
+jedi = "^0.18"
+parso = "^0.8"
+sphinx-rtd-theme = "^1.2"
+pdoc = "^13.1"
+types-toml = "^0.10"
 
 [tool.poetry.scripts]
 multilint = "multilint:main"
