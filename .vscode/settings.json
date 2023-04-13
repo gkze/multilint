@@ -1,5 +1,5 @@
 {
-  "python.interpreterPath": "${env:HOME}/Library/Caches/pypoetry/virtualenvs/pymultilint-z1XJoizr-py3.11",
   "editor.formatOnSave": true,
+  "python.defaultInterpreterPath": "${env:HOME}/Library/Caches/pypoetry/virtualenvs/pymultilint-QyqoYuSu-py3.11",
   "python.formatting.provider": "black"
 }

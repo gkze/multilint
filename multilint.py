@@ -449,13 +449,12 @@ def parse_pyproject_toml(pyproject_toml_path: Path = Path(".")) -> Mapping[str, 
 
 def expand_src_paths(src_paths: Seq[Path]) -> list[Path]:
     """Expand source paths in case they are globs."""
-    return sum(
-        (
-            [Path(ge) for ge in glob(p.name)] if "*" in p.name else [p]
-            for p in src_paths
-        ),
-        [],
-    )
+    # fmt: off
+    return sum((
+        [Path(ge) for ge in glob(p.name)] if "*" in p.name else [p]
+        for p in src_paths
+    ), [])
+    # fmt: on
 
 
 TOOL_RUNNERS: Mapping[Tool, type[ToolRunner]] = {
@@ -522,16 +521,13 @@ class Multilint:
         LOGGER.info(f"Running {tool.value}...")
         tool_config: Mapping[str, Any] = self._get_tool_config(tool)
 
-        result: ToolResult = cast(
-            ToolRunner,
-            TOOL_RUNNERS[tool](
-                tool,
-                expand_src_paths(
-                    [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
-                ),
-                tool_config,
-            ),
+        # fmt: off
+        result: ToolResult = cast(ToolRunner, TOOL_RUNNERS[tool](
+            tool, expand_src_paths(
+                [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
+            ), tool_config),
         ).run()
+        # fmt: on
 
         LOGGER.info(f"{tool.value} exited with {result}")
 
@@ -547,7 +543,8 @@ class Multilint:
             order = self._tool_order
 
         for tool in order:
-            results[tool] = self.run_tool(tool)
+            if tool.name not in self._multilint_config.get("disable", []):
+                results[tool] = self.run_tool(tool)
 
         return results
 
