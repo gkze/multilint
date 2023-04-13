@@ -6,7 +6,11 @@ on:
     branches: [master]
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   release:
+    needs: [ci]
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
