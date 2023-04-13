@@ -325,7 +325,7 @@ class MypyRunner(ToolRunner):
         logger_as_textio: TextIO = cast(TextIO, logger)
 
         try:
-            mypy_main(None, logger_as_textio, logger_as_textio)
+            mypy_main(stdout=logger_as_textio, stderr=logger_as_textio, clean_exit=True)
 
             return ToolResult.SUCCESS
 
@@ -369,9 +369,9 @@ class PydocstyleRunner(ToolRunner):
                 self.level = logging.INFO
 
         info_logger: InfoToolLogger = InfoToolLogger(self._tool.value, logging.INFO)
-        pydocstyle_log_orig: Logger = pydocstyle.utils.log
+        pydocstyle_log_orig: Logger = pydocstyle.utils.log  # type: ignore
         try:
-            pydocstyle.utils.log = info_logger
+            pydocstyle.utils.log = info_logger  # type: ignore
             pydocstyle.checker.log = info_logger
             # pylint: disable=import-outside-toplevel
             from pydocstyle.cli import run_pydocstyle as pydocstyle_main  # type: ignore
@@ -384,7 +384,7 @@ class PydocstyleRunner(ToolRunner):
                 ][pydocstyle_main()]
 
         finally:
-            pydocstyle.utils.log = pydocstyle_log_orig
+            pydocstyle.utils.log = pydocstyle_log_orig  # type: ignore
             pydocstyle.checker.log = pydocstyle_log_orig
 
 
@@ -411,7 +411,7 @@ class PyupgradeRunner(ToolRunner):
             retcode: int = 0
             for src_path in [p for p in self.src_paths if p.is_file()]:
                 retcode |= pyupgrade_fix_file(
-                    src_path,
+                    src_path.resolve().name,
                     Namespace(
                         exit_zero_even_if_changed=self.config.get(
                             "exit_zero_even_if_changed", None
@@ -556,12 +556,12 @@ class Multilint:
         return result
 
     def run_all_tools(
-        self: Multilint, order: Seq[Tool] = None
+        self: Multilint, order: Seq[Tool] = []
     ) -> Mapping[Tool, ToolResult]:
         """Run tools in specified order."""
         results: dict[Tool, ToolResult] = {}
 
-        if order is None:
+        if not order:
             order = self._tool_order
 
         for tool in order:
