@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymultilint"
 packages = [{include = "multilint.py"}]
-version = "0.25.0"
+version = "1.0.0"
 description = "Utility tying multiple code quality tools together"
 authors = ["George Kontridze <george.kontridze@gmail.com>"]
 license = "MIT"
@@ -22,40 +22,35 @@ pylint = "^2.17"
 pyupgrade = "^3.3"
 toml = "^0.10"
 
-[tool.poetry.dev-dependencies]
-ipython = "^8.12"
-jedi = "^0.18"
-parso = "^0.8"
-sphinx-rtd-theme = "^1.2"
-pdoc = "^13.1"
-types-toml = "^0.10"
-
 [tool.poetry.scripts]
 multilint = "multilint:main"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.3.0"
+ipython = "^8.12"
+jedi = "^0.18"
+parso = "^0.8"
+pdoc = "^13.1"
+sphinx-rtd-theme = "^1.2"
+types-pyflakes = "^3.0.0.3"
+types-toml = "^0.10"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.multilint]
-src_paths = ["*.py", "docs"]
+src_paths = ["*.py"]
 
 [tool.autoflake]
-recursive = true
-ignore_init_module_imports = true
-remove_all_unused_imports = true
-remove_unused_variables = true
-verbose = true
+in-place = true
+remove-unused-variables = true
+remove-rhs-for-unused-variables = true
 
 [tool.mypy]
-files = ["*.py"]
+mypy_path = "stubs"
 
 [tool.pyupgrade]
-src_paths = ["*.py", "**/*.py"]
-min_version = "3.9"
+min_version = "3.8"
 
 [tool.pylint.messages_control]
 disable = ["logging-fstring-interpolation", "dangerous-default-value"]

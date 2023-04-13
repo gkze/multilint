@@ -23,16 +23,16 @@ from pathlib import Path
 from typing import Any, TextIO, TypeVar, cast
 from unittest.mock import patch
 
-import pydocstyle  # type: ignore
+import pydocstyle  # type: ignore[import]
 import toml
-from autoflake import _main as autoflake_main  # type: ignore
+from autoflake import _main as autoflake_main  # type: ignore[attr-defined,import]
 from black import main as black_main
 from isort import files as isort_files
 from isort.api import sort_file as isort_file
 from isort.settings import DEFAULT_CONFIG
 from mypy.main import main as mypy_main  # pylint: disable=no-name-in-module
-from pylint.lint import Run as PylintRun  # type: ignore
-from pyupgrade._main import _fix_file as pyupgrade_fix_file  # type: ignore
+from pylint.lint import Run as PylintRun  # type: ignore[import]
+from pyupgrade._main import _fix_file as pyupgrade_fix_file  # type: ignore[import]
 
 FILE_DIR: Path = Path(__file__).resolve().parent
 ROOT_DIR: Path = FILE_DIR
@@ -171,42 +171,17 @@ class AutoflakeRunner(ToolRunner):
     accepted.
     """
 
-    def _make_autoflake_args(self: AutoflakeRunner) -> list[str]:
-        args: list[str] = []
-
-        for key, val in self.config.items():
-            if key == "src_paths":
-                for src in val:
-                    args.append(src)
-
-                continue
-
-            opt: str = f"--{key.replace('_', '-')}"
-
-            if isinstance(val, bool):
-                args.append(opt)
-
-                continue
-
-            args.append(f"{opt}={val}")
-
-        return args
-
     def run(self: AutoflakeRunner) -> ToolResult:
         """Run autoflake."""
         logger: Logger = self.make_logger(TextIOLogger, logging.INFO)
-        autoflake_args: list[str] = self._make_autoflake_args()
-        if all(cfgval.startswith("--") for cfgval in autoflake_args):
-            autoflake_args.extend([str(p) for p in self.src_paths])
-
-        if "--in-place" not in autoflake_args:
-            autoflake_args.append("--in-place")
-
-        retcode: int = autoflake_main(
-            [self._tool.value, *autoflake_args], logger, logger
+        return (
+            ToolResult.SUCCESS
+            if autoflake_main(
+                ["autoflake", *[p.name for p in self.src_paths]], logger, logger, None
+            )
+            == 0
+            else ToolResult.FAILURE
         )
-
-        return ToolResult.SUCCESS if retcode == 0 else ToolResult.FAILURE
 
 
 @dataclass
@@ -233,7 +208,6 @@ class ISortRunner(ToolRunner):
     rule set (with sensible defaults).
     """
 
-    # pylint: disable=too-many-branches
     def run(self: ISortRunner) -> ToolResult:
         """Run isort."""
         logger: Logger = self.make_logger(ToolLogger, logging.INFO)
@@ -243,24 +217,27 @@ class ISortRunner(ToolRunner):
             TextIOLogger, self.make_logger(TextIOLogger, logging.INFO)
         )
 
-        # fmt: off
         for file in isort_files.find(
             [str(p) for p in self.src_paths]
             or cast(Iterable[str], DEFAULT_CONFIG.src_paths),
-            DEFAULT_CONFIG, [], [],
+            DEFAULT_CONFIG,
+            [],
+            [],
         ):
             try:
                 with patch("sys.stdout", isort_logger):
                     isort_file(file)
 
                 results.add(ISortResult(Path(file), ToolResult.SUCCESS))
-            # pylint: disable=broad-except
-            except Exception as ex:
-                results.add(ISortResult(
-                    Path(file), ToolResult.FAILURE,
-                    getattr(ex, "message") if hasattr(ex, "message") else "",
-                ))
-        # fmt: on
+
+            except Exception as ex:  # pylint: disable=broad-exception-caught
+                results.add(
+                    ISortResult(
+                        Path(file),
+                        ToolResult.FAILURE,
+                        getattr(ex, "message") if hasattr(ex, "message") else "",
+                    )
+                )
 
         failed: set[ISortResult] = set()
         for isort_result in results:
@@ -297,6 +274,7 @@ class BlackRunner(ToolRunner):
         try:
             sys.stdout = cast(TextIO, iologger)
             sys.stderr = cast(TextIO, iologger)
+
             # pylint: disable=no-value-for-parameter
             black_main([str(p) for p in self.src_paths])
 
@@ -325,7 +303,12 @@ class MypyRunner(ToolRunner):
         logger_as_textio: TextIO = cast(TextIO, logger)
 
         try:
-            mypy_main(stdout=logger_as_textio, stderr=logger_as_textio, clean_exit=True)
+            mypy_main(
+                args=[p.name for p in self.src_paths],
+                stdout=logger_as_textio,
+                stderr=logger_as_textio,
+                clean_exit=True,
+            )
 
             return ToolResult.SUCCESS
 
@@ -369,22 +352,19 @@ class PydocstyleRunner(ToolRunner):
                 self.level = logging.INFO
 
         info_logger: InfoToolLogger = InfoToolLogger(self._tool.value, logging.INFO)
-        pydocstyle_log_orig: Logger = pydocstyle.utils.log  # type: ignore
+        pydocstyle_log_orig: Logger = pydocstyle.utils.log
         try:
-            pydocstyle.utils.log = info_logger  # type: ignore
+            pydocstyle.utils.log = info_logger
             pydocstyle.checker.log = info_logger
+
             # pylint: disable=import-outside-toplevel
-            from pydocstyle.cli import run_pydocstyle as pydocstyle_main  # type: ignore
+            from pydocstyle.cli import run_pydocstyle  # type: ignore[import]
 
             with patch("sys.stdout", self.make_logger(TextIOLogger, logging.INFO)):
-                return [
-                    ToolResult.SUCCESS,
-                    ToolResult.SUCCESS_PARTIAL,
-                    ToolResult.FAILURE,
-                ][pydocstyle_main()]
+                return list(ToolResult)[run_pydocstyle()]
 
         finally:
-            pydocstyle.utils.log = pydocstyle_log_orig  # type: ignore
+            pydocstyle.utils.log = pydocstyle_log_orig
             pydocstyle.checker.log = pydocstyle_log_orig
 
 
@@ -541,15 +521,16 @@ class Multilint:
         LOGGER.info(f"Running {tool.value}...")
         tool_config: Mapping[str, Any] = self._get_tool_config(tool)
 
-        # fmt: off
-        result: ToolResult = cast(ToolRunner, TOOL_RUNNERS[tool](
-            tool,
-            expand_src_paths(
-                [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
+        result: ToolResult = cast(
+            ToolRunner,
+            TOOL_RUNNERS[tool](
+                tool,
+                expand_src_paths(
+                    [Path(sp) for sp in tool_config.get("src_paths", self._src_paths)]
+                ),
+                tool_config,
             ),
-            tool_config,
-        )).run()
-        # fmt: on
+        ).run()
 
         LOGGER.info(f"{tool.value} exited with {result}")
 
@@ -571,7 +552,8 @@ class Multilint:
 
 
 def main(
-    src_paths: Seq[Path] = [Path(p) for p in sys.argv[1:]], do_exit: bool = True  # type: ignore
+    src_paths: Seq[Path] = [Path(p) for p in sys.argv[1:]],  # type: ignore[name-defined]
+    do_exit: bool = True,
 ) -> int | None:
     """Acts as the default entry point for Multilint.
 
