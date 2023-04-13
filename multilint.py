@@ -219,7 +219,7 @@ class ISortRunner(ToolRunner):
 
         for file in isort_files.find(
             [str(p) for p in self.src_paths]
-            or cast(Iterable[str], DEFAULT_CONFIG.src_paths),
+            or cast(list[str], DEFAULT_CONFIG.src_paths),
             DEFAULT_CONFIG,
             [],
             [],
