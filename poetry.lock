@@ -1227,14 +1227,14 @@ test = ["argcomplete (>=2.0)", "pre-commit", "pytest", "pytest-mock"]
 
 [[package]]
 name = "types-pyflakes"
-version = "3.0.0.3"
+version = "3.0.0.4"
 description = "Typing stubs for pyflakes"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-pyflakes-3.0.0.3.tar.gz", hash = "sha256:9204829ca4d69316b653db91a275f506acc51014b321ce3153a3e5e81596c190"},
-    {file = "types_pyflakes-3.0.0.3-py3-none-any.whl", hash = "sha256:14634470958ec855cae0f7985ff523f44bb35264cabf12aeaf3f7ca650995156"},
+    {file = "types-pyflakes-3.0.0.4.tar.gz", hash = "sha256:a0c500d2202275fee3dfd7e8b83dfc18aa2b44f4173cdb1923500d2b29cc7730"},
+    {file = "types_pyflakes-3.0.0.4-py3-none-any.whl", hash = "sha256:19ed18cf6a28e433b594be2241ff2fdecd8f6bd03c71495c96ab7ae4005ec410"},
 ]
 
 [[package]]
