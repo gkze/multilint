@@ -27,7 +27,7 @@ multilint = "multilint:main"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.12"
-jedi = "^0.18"
+jedi = ">=0.18,<0.20"
 parso = "^0.8"
 pdoc = ">=13.1,<15.0"
 sphinx-rtd-theme = "^1.2"
