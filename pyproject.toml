@@ -30,7 +30,7 @@ ipython = "^8.12"
 jedi = ">=0.18,<0.20"
 parso = "^0.8"
 pdoc = ">=13.1,<15.0"
-sphinx-rtd-theme = "^1.2"
+sphinx-rtd-theme = ">=1.2,<3.0"
 types-pyflakes = "^3.0.0.3"
 types-toml = "^0.10"
 
